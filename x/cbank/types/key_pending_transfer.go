@@ -13,11 +13,11 @@ const (
 
 // PendingTransferKey returns the store key to retrieve an PendingTransfer from the index fields
 func PendingTransferKey(
-	pt *PendingTransfer,
+	index string,
 ) []byte {
 	var key []byte
 
-	key = append(key, []byte(pt.Index)...)
+	key = append(key, []byte(index)...)
 	key = append(key, []byte("/")...)
 
 	return key

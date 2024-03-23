@@ -13,11 +13,11 @@ const (
 
 // CommitmentKey returns the store key to retrieve an Commitment from the index fields
 func CommitmentKey(
-	com *Commitment,
+	index string,
 ) []byte {
 	var key []byte
 
-	key = append(key, com.Point.CompressBytes()...)
+	key = append(key, []byte(index)...)
 	key = append(key, []byte("/")...)
 
 	return key
