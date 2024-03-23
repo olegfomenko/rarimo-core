@@ -1,0 +1,44 @@
+syntax = "proto3";
+package rarimo.rarimocore.cbank;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/rarimo/rarimo-core/x/cbank/types";
+
+message Point {
+  // hex-encoded
+  string xCord = 1;
+  // hex-encoded
+  string yCord = 2;
+}
+
+message Commitment {
+  Point point = 1 [(gogoproto.nullable) = false];
+  string denom = 2;
+}
+
+message Signature {
+  Point r = 1 [(gogoproto.nullable) = false];
+  // hex-encoded
+  string s = 2;
+}
+
+message RangeProof {
+  Point cl = 1[(gogoproto.nullable) = false];
+  Point cr = 2[(gogoproto.nullable) = false];
+  Point co = 3[(gogoproto.nullable) = false];
+  Point cs = 4[(gogoproto.nullable) = false];
+  repeated Point x = 5[(gogoproto.nullable) = false];
+  repeated Point r = 6[(gogoproto.nullable) = false];
+  repeated string l = 7[(gogoproto.nullable) = false];
+  repeated string n = 8[(gogoproto.nullable) = false];
+  Point v = 9[(gogoproto.nullable) = false];
+}
+
+message PendingTransfer {
+  string index = 1;
+  repeated Commitment in = 2[(gogoproto.nullable) = false];
+  repeated Commitment out = 3[(gogoproto.nullable) = false];
+  repeated Signature sigIn = 4[(gogoproto.nullable) = false];
+  Point r = 5;
+}

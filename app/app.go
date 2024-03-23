@@ -105,6 +105,9 @@ import (
 	bridgemodule "github.com/rarimo/rarimo-core/x/bridge"
 	bridgemodulekeeper "github.com/rarimo/rarimo-core/x/bridge/keeper"
 	bridgemoduletypes "github.com/rarimo/rarimo-core/x/bridge/types"
+	cbankmodule "github.com/rarimo/rarimo-core/x/cbank"
+	cbankmodulekeeper "github.com/rarimo/rarimo-core/x/cbank/keeper"
+	cbankmoduletypes "github.com/rarimo/rarimo-core/x/cbank/types"
 	"github.com/rarimo/rarimo-core/x/evm"
 	evmkeeper "github.com/rarimo/rarimo-core/x/evm/keeper"
 	evmtypes "github.com/rarimo/rarimo-core/x/evm/types"
@@ -202,6 +205,7 @@ var (
 
 		vestingmintmodule.AppModuleBasic{},
 		identitymodule.AppModuleBasic{},
+		cbankmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -221,6 +225,7 @@ var (
 		multisigmoduletypes.ModuleName:      nil,
 		evmtypes.ModuleName:                 {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
 		vestingmintmoduletypes.ModuleName:   {authtypes.Minter},
+		cbankmoduletypes.ModuleName:         {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -283,6 +288,8 @@ type App struct {
 
 	VestingmintKeeper vestingmintmodulekeeper.Keeper
 	IdentityKeeper    identitymodulekeeper.Keeper
+
+	CbankKeeper cbankmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 	RarimocoreKeeper rarimocoremodulekeeper.Keeper
 
@@ -346,6 +353,7 @@ func New(
 		multisigmoduletypes.StoreKey, evmtypes.StoreKey, feemarkettypes.StoreKey,
 		vestingmintmoduletypes.StoreKey,
 		identitymoduletypes.StoreKey,
+		cbankmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey, feemarkettypes.TransientKey)
@@ -647,6 +655,14 @@ func New(
 	)
 	vestingmintModule := vestingmintmodule.NewAppModule(appCodec, app.VestingmintKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.CbankKeeper = *cbankmodulekeeper.NewKeeper(
+		appCodec,
+		keys[cbankmoduletypes.StoreKey],
+		keys[cbankmoduletypes.MemStoreKey],
+		app.BankKeeper,
+	)
+	cbankModule := cbankmodule.NewAppModule(appCodec, app.CbankKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	/**** IBC Routing ****/
@@ -721,6 +737,7 @@ func New(
 		evmModule,
 		vestingmintModule,
 		identityModule,
+		cbankModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -759,6 +776,7 @@ func New(
 		multisigmoduletypes.ModuleName,
 		vestingmintmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
+		cbankmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -792,6 +810,7 @@ func New(
 		vestingtypes.ModuleName,
 		vestingmintmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
+		cbankmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -835,6 +854,7 @@ func New(
 		vestingmintmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
 
+		cbankmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -1117,6 +1137,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	//paramsKeeper.Subspace(monitoringptypes.ModuleName)
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
+	paramsKeeper.Subspace(cbankmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

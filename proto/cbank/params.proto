@@ -1,0 +1,13 @@
+syntax = "proto3";
+package rarimo.rarimocore.cbank;
+
+import "gogoproto/gogo.proto";
+import "cbank/commitment.proto";
+
+option go_package = "github.com/rarimo/rarimo-core/x/cbank/types";
+
+// Params defines the parameters for the module.
+message Params {
+  rarimo.rarimocore.cbank.Point g = 1[(gogoproto.nullable) = false];
+  rarimo.rarimocore.cbank.Point h = 2[(gogoproto.nullable) = false];
+}
