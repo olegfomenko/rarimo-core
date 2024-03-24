@@ -56,8 +56,7 @@ func TestSchnorrSignature(t *testing.T) {
 		S: new(big.Int).Mod(new(big.Int).Add(aliceSig.S, bobSig.S), bn256.Order),
 	}
 
-	err = VerifySchnorr(sig, Pub, G, message)
-	if err != nil {
-		panic(err)
+	if !VerifySchnorr(sig, Pub, G, message) {
+		panic("failed")
 	}
 }

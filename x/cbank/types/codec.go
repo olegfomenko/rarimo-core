@@ -13,7 +13,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgDeposit{}, "cbank/Deposit", nil)
 	cdc.RegisterConcrete(&MsgWithdraw{}, "cbank/Withdraw", nil)
 	cdc.RegisterConcrete(&MsgTransfer{}, "cbank/Transfer", nil)
-	cdc.RegisterConcrete(&MsgFinishTransfer{}, "cbank/FinishTransfer", nil)
 	cdc.RegisterConcrete(&Commitment{}, "cbank/Commitment", nil)
 	cdc.RegisterConcrete(&RangeProof{}, "cbank/RangeProof", nil)
 	cdc.RegisterConcrete(&Signature{}, "cbank/Signature", nil)
@@ -32,9 +31,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgTransfer{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgFinishTransfer{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

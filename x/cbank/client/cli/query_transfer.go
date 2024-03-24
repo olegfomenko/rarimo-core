@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/cloudflare/bn256"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -18,7 +19,7 @@ func CmdGenerateKey() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "generate-keypair",
 		Short: "Generate BN256 keypair",
-		Args:  cobra.ExactArgs(0),
+		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			queryClient := types.NewQueryClient(clientCtx)
@@ -78,7 +79,12 @@ func CmdGenerateCommitment() *cobra.Command {
 
 			commitment := types.NewCommitment(com, A2, argDenom)
 			cmd.Println("Commitment index:", commitment.Index())
-			cmd.Println("Commitment entity:", commitment)
+
+			json, err := json.MarshalIndent(commitment, " ", "\t")
+			if err != nil {
+				return err
+			}
+			cmd.Println("Commitment entity:", string(json))
 			return nil
 		},
 	}
