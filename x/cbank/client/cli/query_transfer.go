@@ -29,7 +29,7 @@ func CmdGenerateKey() *cobra.Command {
 				return err
 			}
 
-			prv, pub, err := pkg.PrivateKey(params.Params.G.MustToBN256G1())
+			prv, pub, err := pkg.PrivateKey(params.Params.HVec[0].MustToBN256G1())
 			if err != nil {
 				return err
 			}
@@ -47,7 +47,7 @@ func CmdGenerateKey() *cobra.Command {
 
 func CmdGenerateCommitment() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "generate-keypair [v] [a1] [a2] [denom]",
+		Use:   "generate-commitment [v] [a1] [a2] [denom]",
 		Short: "Generate commitment",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -72,10 +72,10 @@ func CmdGenerateCommitment() *cobra.Command {
 				return errors.New("invalid v: should be in dec")
 			}
 
-			A1 := pkg.PublicKey(a1, params.Params.G.MustToBN256G1())
-			A2 := pkg.PublicKey(a2, params.Params.G.MustToBN256G1())
+			A1 := pkg.PublicKey(a1, params.Params.HVec[0].MustToBN256G1())
+			A2 := pkg.PublicKey(a2, params.Params.HVec[0].MustToBN256G1())
 
-			com := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.HVec[0].MustToBN256G1()))
+			com := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.G.MustToBN256G1()))
 
 			commitment := types.NewCommitment(com, A2, argDenom)
 			cmd.Println("Commitment index:", commitment.Index())
@@ -122,7 +122,7 @@ func CmdPrepareReceiver() *cobra.Command {
 				return err
 			}
 
-			B2 := pkg.PublicKey(b2, params.Params.G.MustToBN256G1())
+			B2 := pkg.PublicKey(b2, params.Params.HVec[0].MustToBN256G1())
 
 			v, ok := new(big.Int).SetString(arg_v, 10)
 			if !ok {
@@ -132,8 +132,8 @@ func CmdPrepareReceiver() *cobra.Command {
 			k1 := pkg.HashDH(A2.MustToBN256G1(), b1)
 			k2 := pkg.HashDH(A2.MustToBN256G1(), b2)
 
-			comOut := new(bn256.G1).Add(pkg.PublicKey(k1, params.Params.G.MustToBN256G1()), pkg.PublicKey(v, params.Params.HVec[0].MustToBN256G1()))
-			addrOut := new(bn256.G1).Add(pkg.PublicKey(k2, params.Params.G.MustToBN256G1()), B2)
+			comOut := new(bn256.G1).Add(pkg.PublicKey(k1, params.Params.HVec[0].MustToBN256G1()), pkg.PublicKey(v, params.Params.G.MustToBN256G1()))
+			addrOut := new(bn256.G1).Add(pkg.PublicKey(k2, params.Params.HVec[0].MustToBN256G1()), B2)
 
 			// demon is not required for index
 			commitment := types.NewCommitment(comOut, addrOut, "")

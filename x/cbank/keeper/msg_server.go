@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	"github.com/cloudflare/bn256"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -31,12 +32,6 @@ func (m msgServer) Deposit(c context.Context, msg *types.MsgDeposit) (*types.Msg
 	commitmentPub := msg.CommitmentPublicKey.MustToBN256G1()
 	address := msg.Address.MustToBN256G1()
 
-	sigMsgHash := pkg.Msg([]byte("deposit"), commitmentPub.Marshal(), address.Marshal())
-
-	if !pkg.VerifySchnorr(msg.SigCommitment.Signature(), msg.CommitmentPublicKey.MustToBN256G1(), params.G.MustToBN256G1(), sigMsgHash) {
-		return nil, types.ErrInvalidSignature
-	}
-
 	amount, _ := sdk.NewIntFromString(msg.Amount)
 	payerAddr, _ := sdk.AccAddressFromBech32(msg.Creator)
 
@@ -50,9 +45,15 @@ func (m msgServer) Deposit(c context.Context, msg *types.MsgDeposit) (*types.Msg
 	}
 
 	com := new(bn256.G1).Add(
-		new(bn256.G1).ScalarMult(params.HVec[0].MustToBN256G1(), amount.BigInt()),
+		new(bn256.G1).ScalarMult(params.G.MustToBN256G1(), amount.BigInt()),
 		commitmentPub,
 	)
+
+	sigMsgHash := pkg.Msg([]byte("deposit"), com.Marshal(), address.Marshal())
+
+	if !pkg.VerifySchnorr(msg.SigCommitment.Signature(), msg.CommitmentPublicKey.MustToBN256G1(), params.HVec[0].MustToBN256G1(), sigMsgHash) {
+		return nil, types.ErrInvalidSignature
+	}
 
 	commitment := &types.Commitment{
 		Commitment: *new(types.Point).MustFromBN256G1(com),
@@ -80,22 +81,23 @@ func (m msgServer) Withdraw(c context.Context, msg *types.MsgWithdraw) (*types.M
 
 	amount, _ := sdk.NewIntFromString(msg.Amount)
 
-	aH := new(bn256.G1).ScalarMult(params.HVec[0].MustToBN256G1(), amount.BigInt())
+	aG := new(bn256.G1).ScalarMult(params.G.MustToBN256G1(), amount.BigInt())
+
 	commitmentPub := new(bn256.G1).Add(
 		commitment.Commitment.MustToBN256G1(),
-		new(bn256.G1).ScalarMult(aH, big.NewInt(-1)),
+		new(bn256.G1).ScalarMult(aG, big.NewInt(-1)),
 	)
 
 	sigMsgHash := pkg.Msg([]byte("withdraw"), commitment.Commitment.MustToBN256G1().Marshal(), commitment.Address.MustToBN256G1().Marshal())
 
-	if !pkg.VerifySchnorr(msg.SigCommitment.Signature(), commitmentPub, params.G.MustToBN256G1(), sigMsgHash) {
-		return nil, types.ErrInvalidSignature
+	if !pkg.VerifySchnorr(msg.SigCommitment.Signature(), commitmentPub, params.HVec[0].MustToBN256G1(), sigMsgHash) {
+		return nil, errors.Wrap(types.ErrInvalidSignature, "invalid commitment sig")
 	}
 
 	sigMsgHash = pkg.Msg([]byte("withdraw address"), commitment.Commitment.MustToBN256G1().Marshal(), commitment.Address.MustToBN256G1().Marshal())
 
-	if !pkg.VerifySchnorr(msg.SigAddress.Signature(), commitment.Address.MustToBN256G1(), params.G.MustToBN256G1(), sigMsgHash) {
-		return nil, types.ErrInvalidSignature
+	if !pkg.VerifySchnorr(msg.SigAddress.Signature(), commitment.Address.MustToBN256G1(), params.HVec[0].MustToBN256G1(), sigMsgHash) {
+		return nil, errors.Wrap(types.ErrInvalidSignature, "invalid address sig")
 	}
 
 	receiverAddr, _ := sdk.AccAddressFromBech32(msg.Creator)
@@ -121,7 +123,7 @@ func (m msgServer) Transfer(c context.Context, msg *types.MsgTransfer) (*types.M
 
 	var sigPublicKey *bn256.G1
 
-	var sigMsg []byte = make([]byte, 0, (len(msg.In)+len(msg.Out))*64)
+	var sigMsg []byte
 
 	for i, out := range msg.Out {
 		if _, ok := m.GetCommitment(ctx, out.Index()); ok {
@@ -132,7 +134,9 @@ func (m msgServer) Transfer(c context.Context, msg *types.MsgTransfer) (*types.M
 			return nil, types.ErrInvalidRangeProof
 		}
 
-		toAdd := new(bn256.G1).ScalarMult(out.Commitment.MustToBN256G1(), big.NewInt(-1))
+		toAdd := new(bn256.G1).ScalarMult(out.Commitment.MustToBN256G1(), new(big.Int).Mod(big.NewInt(-1), bn256.Order))
+
+		sigMsg = append(sigMsg, out.Commitment.MustToBN256G1().Marshal()...)
 
 		if sigPublicKey == nil {
 			sigPublicKey = toAdd
@@ -140,8 +144,6 @@ func (m msgServer) Transfer(c context.Context, msg *types.MsgTransfer) (*types.M
 		}
 
 		sigPublicKey = new(bn256.G1).Add(sigPublicKey, toAdd)
-
-		sigMsg = append(sigMsg, out.Commitment.MustToBN256G1().Marshal()...)
 	}
 
 	sigMsg = append(sigMsg, []byte("transfer")...)
@@ -157,13 +159,13 @@ func (m msgServer) Transfer(c context.Context, msg *types.MsgTransfer) (*types.M
 
 		sigMsgHash := pkg.Msg([]byte("transfer address"), in.Commitment.MustToBN256G1().Marshal(), in.Address.MustToBN256G1().Marshal())
 
-		if !pkg.VerifySchnorr(msg.SigAddress[i].Signature(), in.Address.MustToBN256G1(), params.G.MustToBN256G1(), sigMsgHash) {
-			return nil, types.ErrInvalidSignature
+		if !pkg.VerifySchnorr(msg.SigAddress[i].Signature(), in.Address.MustToBN256G1(), params.HVec[0].MustToBN256G1(), sigMsgHash) {
+			return nil, errors.Wrap(types.ErrInvalidSignature, "invalid address signature")
 		}
 	}
 
-	if !pkg.VerifySchnorr(msg.SigCommitment.Signature(), sigPublicKey, params.G.MustToBN256G1(), pkg.Msg(sigMsg)) {
-		return nil, types.ErrInvalidSignature
+	if !pkg.VerifySchnorr(msg.SigCommitment.Signature(), sigPublicKey, params.HVec[0].MustToBN256G1(), pkg.Msg(sigMsg)) {
+		return nil, errors.Wrap(types.ErrInvalidSignature, "invalid commitment signature")
 	}
 
 	for _, in := range msg.In {

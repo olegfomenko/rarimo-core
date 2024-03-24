@@ -46,6 +46,7 @@ func CmdWithdraw() *cobra.Command {
 			}
 
 			A1 := pkg.PublicKey(a1, params.Params.G.MustToBN256G1())
+			cmd.Println(hexutil.Encode(A1.Marshal()))
 			A2 := pkg.PublicKey(a2, params.Params.G.MustToBN256G1())
 
 			com := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.HVec[0].MustToBN256G1()))
@@ -56,6 +57,11 @@ func CmdWithdraw() *cobra.Command {
 				params.Params.G.MustToBN256G1(),
 				pkg.Msg([]byte("withdraw"), com.Marshal(), A2.Marshal()),
 			)
+			if !pkg.VerifySchnorr(sigCom, A1, params.Params.G.MustToBN256G1(), pkg.Msg([]byte("withdraw"), com.Marshal(), A2.Marshal())) {
+				panic("failed")
+			}
+
+			cmd.Println(hexutil.Encode(pkg.Msg([]byte("withdraw"), com.Marshal(), A2.Marshal()).Bytes()))
 
 			if err != nil {
 				return err
@@ -83,6 +89,8 @@ func CmdWithdraw() *cobra.Command {
 				Creator:         clientCtx.GetFromAddress().String(),
 			}
 
+			cmd.Println(msg.SigCommitment.R.MustToBN256G1().Marshal())
+
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -97,7 +105,7 @@ func CmdWithdraw() *cobra.Command {
 
 func CmdDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "transfer [v] [a1] [a2] [denom]",
+		Use:   "deposit [v] [a1] [a2] [denom]",
 		Short: "Deposit tokens",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -126,15 +134,15 @@ func CmdDeposit() *cobra.Command {
 				return errors.New("invalid v: should be in dec")
 			}
 
-			A1 := pkg.PublicKey(a1, params.Params.G.MustToBN256G1())
-			A2 := pkg.PublicKey(a2, params.Params.G.MustToBN256G1())
+			A1 := pkg.PublicKey(a1, params.Params.HVec[0].MustToBN256G1())
+			A2 := pkg.PublicKey(a2, params.Params.HVec[0].MustToBN256G1())
 
-			com := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.HVec[0].MustToBN256G1()))
+			com := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.G.MustToBN256G1()))
 
 			sigCom, err := pkg.SignSchnorr(
 				a1,
 				A1,
-				params.Params.G.MustToBN256G1(),
+				params.Params.HVec[0].MustToBN256G1(),
 				pkg.Msg([]byte("deposit"), com.Marshal(), A2.Marshal()),
 			)
 
@@ -196,10 +204,10 @@ func CmdTransfer() *cobra.Command {
 				return errors.New("invalid v: should be in dec")
 			}
 
-			A1 := pkg.PublicKey(a1, params.Params.G.MustToBN256G1())
-			A2 := pkg.PublicKey(a2, params.Params.G.MustToBN256G1())
+			A1 := pkg.PublicKey(a1, params.Params.HVec[0].MustToBN256G1())
+			A2 := pkg.PublicKey(a2, params.Params.HVec[0].MustToBN256G1())
 
-			comIn := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.HVec[0].MustToBN256G1()))
+			comIn := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.G.MustToBN256G1()))
 
 			B1, err := new(types.Point).Decompress(argB1)
 			if err != nil {
@@ -214,30 +222,40 @@ func CmdTransfer() *cobra.Command {
 			k1 := pkg.HashDH(B1.MustToBN256G1(), a2)
 			k2 := pkg.HashDH(B2.MustToBN256G1(), a2)
 
-			comOut := new(bn256.G1).Add(pkg.PublicKey(k1, params.Params.G.MustToBN256G1()), pkg.PublicKey(v, params.Params.HVec[0].MustToBN256G1()))
-			addrOut := new(bn256.G1).Add(pkg.PublicKey(k2, params.Params.G.MustToBN256G1()), B2.MustToBN256G1())
+			comOut := new(bn256.G1).Add(pkg.PublicKey(v, params.Params.G.MustToBN256G1()), pkg.PublicKey(k1, params.Params.HVec[0].MustToBN256G1()))
+
+			addrOut := new(bn256.G1).Add(pkg.PublicKey(k2, params.Params.HVec[0].MustToBN256G1()), B2.MustToBN256G1())
 
 			sigCom, err := pkg.SignSchnorr(
 				new(big.Int).Mod(new(big.Int).Sub(a1, k1), bn256.Order),
-				pkg.PublicKey(new(big.Int).Mod(new(big.Int).Sub(a1, k1), bn256.Order), params.Params.G.MustToBN256G1()),
-				params.Params.G.MustToBN256G1(),
-				pkg.Msg(comOut.Marshal(), []byte("transfer"), comIn.Marshal()),
+				pkg.PublicKey(new(big.Int).Mod(new(big.Int).Sub(a1, k1), bn256.Order), params.Params.HVec[0].MustToBN256G1()),
+				params.Params.HVec[0].MustToBN256G1(),
+				pkg.Msg(append(append(comOut.Marshal(), []byte("transfer")...), comIn.Marshal()...)),
 			)
 			if err != nil {
 				return err
 			}
 
+			digits := bulletproofs.UInt64Hex(v.Uint64())
+			cmd.Println(digits)
+
 			proof := bulletproofs.ProveRange(params.Params.ReciprocalPublic(), bulletproofs.NewKeccakFS(), &bulletproofs.ReciprocalPrivate{
 				X:      v,
-				M:      bulletproofs.HexMapping(bulletproofs.UInt64Hex(v.Uint64())),
-				Digits: bulletproofs.UInt64Hex(v.Uint64()),
-				S:      a1,
+				M:      bulletproofs.HexMapping(digits),
+				Digits: digits,
+				S:      k1,
 			})
+
+			cmd.Println(bulletproofs.HexMapping(digits))
+
+			if err := bulletproofs.VerifyRange(params.Params.ReciprocalPublic(), comOut, bulletproofs.NewKeccakFS(), proof); err != nil {
+				panic(err)
+			}
 
 			sigAddr, err := pkg.SignSchnorr(
 				a2,
 				A2,
-				params.Params.G.MustToBN256G1(),
+				params.Params.HVec[0].MustToBN256G1(),
 				pkg.Msg([]byte("transfer address"), comIn.Marshal(), A2.Marshal()),
 			)
 			if err != nil {

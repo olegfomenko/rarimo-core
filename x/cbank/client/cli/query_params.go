@@ -72,7 +72,7 @@ func CmdQueryGenerateParams() *cobra.Command {
 				GVec:     (*GVec),
 				HVec:     (*HVec)[:26],
 				Nd:       16,
-				Np:       15,
+				Np:       16,
 				GVecWNLA: []types.Point{},
 				HVecWNLA: (*HVec)[26:],
 			}
