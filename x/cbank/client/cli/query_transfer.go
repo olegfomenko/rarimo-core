@@ -134,6 +134,8 @@ func CmdPrepareReceiver() *cobra.Command {
 
 			cmd.Println("Commitment index:", commitment.Index())
 			cmd.Println("Address", hexutil.Encode(addrOut.Marshal()))
+			cmd.Println("Commitment private key", hexutil.Encode(k1.Bytes()))
+			cmd.Println("Address private key", hexutil.Encode(new(big.Int).Add(k2, b2).Bytes()))
 			return nil
 		},
 	}

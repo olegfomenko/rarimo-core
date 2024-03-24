@@ -15,6 +15,154 @@ import (
 	"math/big"
 )
 
+func CmdWithdraw() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "withdraw [v] [a1] [a2]",
+		Short: "Deposit tokens",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			arg_v := args[0]
+			arg_a1 := args[1]
+			arg_a2 := args[2]
+
+			a1 := new(big.Int).SetBytes(hexutil.MustDecode(arg_a1))
+			a2 := new(big.Int).SetBytes(hexutil.MustDecode(arg_a2))
+
+			params, err := queryClient.Params(context.TODO(), &types.QueryParamsRequest{})
+			if err != nil {
+				return err
+			}
+
+			v, ok := new(big.Int).SetString(arg_v, 10)
+			if !ok {
+				return errors.New("invalid v: should be in dec")
+			}
+
+			A1 := pkg.PublicKey(a1, params.Params.G.MustToBN256G1())
+			A2 := pkg.PublicKey(a2, params.Params.G.MustToBN256G1())
+
+			com := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.HVec[0].MustToBN256G1()))
+
+			sigCom, err := pkg.SignSchnorr(
+				a1,
+				A1,
+				params.Params.G.MustToBN256G1(),
+				pkg.Msg([]byte("withdraw"), com.Marshal(), A2.Marshal()),
+			)
+
+			if err != nil {
+				return err
+			}
+
+			sigAddress, err := pkg.SignSchnorr(
+				a2,
+				A2,
+				params.Params.G.MustToBN256G1(),
+				pkg.Msg([]byte("withdraw address"), com.Marshal(), A2.Marshal()),
+			)
+
+			if err != nil {
+				return err
+			}
+
+			// denom is not required for index
+			commitment := types.NewCommitment(com, A2, "")
+
+			msg := types.MsgWithdraw{
+				CommitmentIndex: commitment.Index(),
+				SigCommitment:   *new(types.Signature).FromSignature(sigCom),
+				SigAddress:      *new(types.Signature).FromSignature(sigAddress),
+				Amount:          v.String(),
+				Creator:         clientCtx.GetFromAddress().String(),
+			}
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdDeposit() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "transfer [v] [a1] [a2] [denom]",
+		Short: "Deposit tokens",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			arg_v := args[0]
+			arg_a1 := args[1]
+			arg_a2 := args[2]
+			argDenom := args[3]
+
+			a1 := new(big.Int).SetBytes(hexutil.MustDecode(arg_a1))
+			a2 := new(big.Int).SetBytes(hexutil.MustDecode(arg_a2))
+
+			params, err := queryClient.Params(context.TODO(), &types.QueryParamsRequest{})
+			if err != nil {
+				return err
+			}
+
+			v, ok := new(big.Int).SetString(arg_v, 10)
+			if !ok {
+				return errors.New("invalid v: should be in dec")
+			}
+
+			A1 := pkg.PublicKey(a1, params.Params.G.MustToBN256G1())
+			A2 := pkg.PublicKey(a2, params.Params.G.MustToBN256G1())
+
+			com := new(bn256.G1).Add(A1, pkg.PublicKey(v, params.Params.HVec[0].MustToBN256G1()))
+
+			sigCom, err := pkg.SignSchnorr(
+				a1,
+				A1,
+				params.Params.G.MustToBN256G1(),
+				pkg.Msg([]byte("deposit"), com.Marshal(), A2.Marshal()),
+			)
+
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgDeposit{
+				CommitmentPublicKey: *new(types.Point).MustFromBN256G1(A1),
+				Address:             *new(types.Point).MustFromBN256G1(A2),
+				SigCommitment:       *new(types.Signature).FromSignature(sigCom),
+				Creator:             clientCtx.GetFromAddress().String(),
+				Amount:              v.String(),
+				Demon:               argDenom,
+			}
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func CmdTransfer() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "transfer [a1] [a2] [v] [B1] [B2] [denom]",
