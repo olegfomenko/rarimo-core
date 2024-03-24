@@ -78,8 +78,9 @@ func (m *Point) GetYCord() string {
 }
 
 type Commitment struct {
-	Point Point  `protobuf:"bytes,1,opt,name=point,proto3" json:"point"`
-	Denom string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
+	Commitment Point  `protobuf:"bytes,1,opt,name=commitment,proto3" json:"commitment"`
+	Address    Point  `protobuf:"bytes,2,opt,name=address,proto3" json:"address"`
+	Denom      string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
 func (m *Commitment) Reset()         { *m = Commitment{} }
@@ -115,9 +116,16 @@ func (m *Commitment) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Commitment proto.InternalMessageInfo
 
-func (m *Commitment) GetPoint() Point {
+func (m *Commitment) GetCommitment() Point {
 	if m != nil {
-		return m.Point
+		return m.Commitment
+	}
+	return Point{}
+}
+
+func (m *Commitment) GetAddress() Point {
+	if m != nil {
+		return m.Address
 	}
 	return Point{}
 }
@@ -290,122 +298,40 @@ func (m *RangeProof) GetV() Point {
 	return Point{}
 }
 
-type PendingTransfer struct {
-	Index string       `protobuf:"bytes,1,opt,name=index,proto3" json:"index,omitempty"`
-	In    []Commitment `protobuf:"bytes,2,rep,name=in,proto3" json:"in"`
-	Out   []Commitment `protobuf:"bytes,3,rep,name=out,proto3" json:"out"`
-	SigIn []Signature  `protobuf:"bytes,4,rep,name=sigIn,proto3" json:"sigIn"`
-	R     *Point       `protobuf:"bytes,5,opt,name=r,proto3" json:"r,omitempty"`
-}
-
-func (m *PendingTransfer) Reset()         { *m = PendingTransfer{} }
-func (m *PendingTransfer) String() string { return proto.CompactTextString(m) }
-func (*PendingTransfer) ProtoMessage()    {}
-func (*PendingTransfer) Descriptor() ([]byte, []int) {
-	return fileDescriptor_878082f8e8d969b7, []int{4}
-}
-func (m *PendingTransfer) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *PendingTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_PendingTransfer.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *PendingTransfer) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PendingTransfer.Merge(m, src)
-}
-func (m *PendingTransfer) XXX_Size() int {
-	return m.Size()
-}
-func (m *PendingTransfer) XXX_DiscardUnknown() {
-	xxx_messageInfo_PendingTransfer.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PendingTransfer proto.InternalMessageInfo
-
-func (m *PendingTransfer) GetIndex() string {
-	if m != nil {
-		return m.Index
-	}
-	return ""
-}
-
-func (m *PendingTransfer) GetIn() []Commitment {
-	if m != nil {
-		return m.In
-	}
-	return nil
-}
-
-func (m *PendingTransfer) GetOut() []Commitment {
-	if m != nil {
-		return m.Out
-	}
-	return nil
-}
-
-func (m *PendingTransfer) GetSigIn() []Signature {
-	if m != nil {
-		return m.SigIn
-	}
-	return nil
-}
-
-func (m *PendingTransfer) GetR() *Point {
-	if m != nil {
-		return m.R
-	}
-	return nil
-}
-
 func init() {
 	proto.RegisterType((*Point)(nil), "rarimo.rarimocore.cbank.Point")
 	proto.RegisterType((*Commitment)(nil), "rarimo.rarimocore.cbank.Commitment")
 	proto.RegisterType((*Signature)(nil), "rarimo.rarimocore.cbank.Signature")
 	proto.RegisterType((*RangeProof)(nil), "rarimo.rarimocore.cbank.RangeProof")
-	proto.RegisterType((*PendingTransfer)(nil), "rarimo.rarimocore.cbank.PendingTransfer")
 }
 
 func init() { proto.RegisterFile("cbank/commitment.proto", fileDescriptor_878082f8e8d969b7) }
 
 var fileDescriptor_878082f8e8d969b7 = []byte{
-	// 434 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x94, 0x41, 0x6b, 0xd4, 0x40,
-	0x18, 0x86, 0x77, 0x92, 0x4d, 0x75, 0x3f, 0x05, 0x61, 0x28, 0x3a, 0x78, 0x88, 0x4b, 0xbc, 0x14,
-	0xd4, 0x04, 0x5a, 0x2f, 0x2a, 0x78, 0x68, 0xf1, 0xe0, 0x41, 0x58, 0xa2, 0x27, 0x0f, 0x42, 0x36,
-	0x99, 0xc6, 0xc1, 0x64, 0xbe, 0x65, 0x32, 0x5b, 0xd2, 0x1f, 0x21, 0xf8, 0x33, 0xfc, 0x29, 0x3d,
-	0xf6, 0xe8, 0x49, 0x64, 0xf7, 0x8f, 0xc8, 0x7c, 0xd3, 0x54, 0x2f, 0x0b, 0x9b, 0xd3, 0xe4, 0x7b,
-	0x99, 0xe7, 0x9d, 0xe1, 0xcd, 0x9b, 0xc0, 0xc3, 0x72, 0x59, 0xe8, 0x6f, 0x59, 0x89, 0x6d, 0xab,
-	0x6c, 0x2b, 0xb5, 0x4d, 0x57, 0x06, 0x2d, 0xf2, 0x47, 0xa6, 0x30, 0xaa, 0xc5, 0xd4, 0x2f, 0x25,
-	0x1a, 0x99, 0xd2, 0xce, 0xc7, 0x87, 0x35, 0xd6, 0x48, 0x7b, 0x32, 0xf7, 0xe4, 0xb7, 0x27, 0x27,
-	0x10, 0x2d, 0x50, 0x69, 0xcb, 0x0f, 0x21, 0xea, 0xcf, 0xd0, 0x54, 0x82, 0xcd, 0xd9, 0xd1, 0x2c,
-	0xf7, 0x83, 0x53, 0x2f, 0x49, 0x0d, 0xbc, 0x4a, 0x43, 0xf2, 0x05, 0xe0, 0xec, 0xf6, 0x5c, 0xfe,
-	0x1a, 0xa2, 0x95, 0xb3, 0x20, 0xf2, 0xde, 0x71, 0x9c, 0xee, 0xb8, 0x41, 0x4a, 0x07, 0x9d, 0x4e,
-	0xaf, 0x7e, 0x3f, 0x99, 0xe4, 0x1e, 0x71, 0xfe, 0x95, 0xd4, 0xd8, 0x0e, 0xfe, 0x34, 0x24, 0x1f,
-	0x60, 0xf6, 0x51, 0xd5, 0xba, 0xb0, 0x6b, 0x23, 0xf9, 0x31, 0x30, 0x33, 0xca, 0x9a, 0x19, 0x7e,
-	0x1f, 0x58, 0x77, 0x63, 0xc9, 0xba, 0xe4, 0x67, 0x08, 0x90, 0x17, 0xba, 0x96, 0x0b, 0x83, 0x78,
-	0xce, 0x5f, 0x42, 0x50, 0x36, 0xa3, 0x1c, 0x83, 0xb2, 0x21, 0xca, 0x90, 0xe7, 0xfe, 0x94, 0x21,
-	0x0a, 0x45, 0x38, 0x8a, 0x42, 0xa2, 0x3a, 0x31, 0x1d, 0x45, 0x75, 0x2e, 0xa8, 0x5e, 0x44, 0xf3,
-	0x70, 0xff, 0xa0, 0x7a, 0x1f, 0xee, 0xc1, 0x18, 0xc6, 0x70, 0x0e, 0xac, 0x11, 0x77, 0xe6, 0xe1,
-	0xd1, 0x6c, 0xd0, 0x1a, 0xa7, 0x69, 0x71, 0xf7, 0x7f, 0x4d, 0x3b, 0xef, 0x0b, 0x31, 0x1b, 0xf3,
-	0xe2, 0x2e, 0x92, 0xef, 0x01, 0x3c, 0x58, 0x48, 0x5d, 0x29, 0x5d, 0x7f, 0x32, 0x85, 0xee, 0xce,
-	0xa5, 0x71, 0x1d, 0x51, 0xba, 0x92, 0xfd, 0xd0, 0x4c, 0x1a, 0xf8, 0x2b, 0x08, 0x94, 0x16, 0x01,
-	0x5d, 0xfd, 0xe9, 0x4e, 0xfb, 0x7f, 0x35, 0x1d, 0x82, 0x52, 0x9a, 0xbf, 0x81, 0x10, 0xd7, 0x56,
-	0x84, 0x63, 0x59, 0x47, 0xf1, 0xb7, 0x10, 0x75, 0xaa, 0x7e, 0xaf, 0xc5, 0x94, 0xf0, 0x64, 0x27,
-	0x7e, 0xdb, 0xe0, 0xa1, 0xf1, 0x84, 0xf1, 0xe7, 0x2e, 0xf1, 0x68, 0x9f, 0x54, 0x72, 0x66, 0x4e,
-	0xdf, 0x5d, 0x6d, 0x62, 0x76, 0xbd, 0x89, 0xd9, 0x9f, 0x4d, 0xcc, 0x7e, 0x6c, 0xe3, 0xc9, 0xf5,
-	0x36, 0x9e, 0xfc, 0xda, 0xc6, 0x93, 0xcf, 0xcf, 0x6a, 0x65, 0xbf, 0xae, 0x97, 0x69, 0x89, 0x6d,
-	0xe6, 0xf9, 0x9b, 0xe5, 0x85, 0xf3, 0xc9, 0xfa, 0xcc, 0xff, 0x1f, 0xec, 0xe5, 0x4a, 0x76, 0xcb,
-	0x03, 0xfa, 0xd8, 0x4f, 0xfe, 0x06, 0x00, 0x00, 0xff, 0xff, 0x5e, 0x89, 0x27, 0x2d, 0x35, 0x04,
-	0x00, 0x00,
+	// 364 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0xcf, 0x4e, 0xf2, 0x40,
+	0x14, 0xc5, 0x3b, 0x2d, 0x7f, 0xbe, 0xde, 0xcf, 0xd5, 0x84, 0x68, 0xe3, 0xa2, 0x92, 0xae, 0x48,
+	0x8c, 0x6d, 0x02, 0xae, 0x5d, 0x80, 0x2e, 0x4d, 0x08, 0xee, 0xdc, 0x95, 0xb6, 0xd6, 0xc6, 0x76,
+	0x2e, 0x99, 0x0e, 0xa4, 0xbc, 0x85, 0x8f, 0xc1, 0xa3, 0xb0, 0x64, 0xe9, 0xca, 0x18, 0x78, 0x11,
+	0x33, 0x33, 0xa0, 0x6c, 0x4c, 0xe8, 0x6a, 0x3a, 0x27, 0xf7, 0x77, 0xee, 0xb9, 0xb7, 0x19, 0x38,
+	0x8f, 0xa6, 0x21, 0x7b, 0x0b, 0x22, 0x2c, 0x8a, 0x4c, 0x14, 0x09, 0x13, 0xfe, 0x8c, 0xa3, 0x40,
+	0x7a, 0xc1, 0x43, 0x9e, 0x15, 0xe8, 0xeb, 0x23, 0x42, 0x9e, 0xf8, 0xaa, 0xf2, 0xb2, 0x93, 0x62,
+	0x8a, 0xaa, 0x26, 0x90, 0x5f, 0xba, 0xdc, 0x1b, 0x40, 0x73, 0x8c, 0x19, 0x13, 0xb4, 0x03, 0xcd,
+	0x6a, 0x84, 0x3c, 0x76, 0x48, 0x97, 0xf4, 0xec, 0x89, 0xbe, 0x48, 0x75, 0xa9, 0x54, 0x53, 0xab,
+	0xea, 0xe2, 0xad, 0x08, 0xc0, 0xe8, 0xa7, 0x31, 0xbd, 0x07, 0xf8, 0x8d, 0xa1, 0xf8, 0xff, 0x7d,
+	0xd7, 0xff, 0x23, 0x87, 0xaf, 0xda, 0x0d, 0x1b, 0xeb, 0xcf, 0x2b, 0x63, 0x72, 0xc4, 0xd1, 0x3b,
+	0x68, 0x87, 0x71, 0xcc, 0x93, 0xb2, 0x54, 0xcd, 0x4e, 0xb5, 0x38, 0x40, 0x32, 0x6a, 0x9c, 0x30,
+	0x2c, 0x1c, 0x4b, 0x47, 0x55, 0x17, 0xef, 0x11, 0xec, 0xa7, 0x2c, 0x65, 0xa1, 0x98, 0xf3, 0x84,
+	0xf6, 0x81, 0xf0, 0x5a, 0xf9, 0x08, 0xa7, 0x67, 0x40, 0xca, 0xfd, 0xf4, 0xa4, 0xf4, 0x56, 0x16,
+	0xc0, 0x24, 0x64, 0x69, 0x32, 0xe6, 0x88, 0x2f, 0xf4, 0x16, 0xcc, 0x28, 0xaf, 0xe5, 0x68, 0x46,
+	0xb9, 0xa2, 0x78, 0xad, 0x21, 0xcd, 0x88, 0x2b, 0x0a, 0xd5, 0x70, 0xa7, 0x53, 0xa8, 0xa8, 0xd2,
+	0x69, 0xd4, 0xa2, 0x4a, 0xb9, 0xa8, 0xca, 0x69, 0x76, 0xad, 0xd3, 0x17, 0x55, 0xe9, 0xe5, 0xb6,
+	0xea, 0x30, 0x9c, 0x52, 0x20, 0xb9, 0xd3, 0xee, 0x5a, 0x3d, 0xfb, 0xa0, 0xe5, 0x52, 0x63, 0xce,
+	0xbf, 0x63, 0x8d, 0x49, 0xef, 0x85, 0x63, 0xd7, 0xf9, 0x71, 0x8b, 0xe1, 0xc3, 0x7a, 0xeb, 0x92,
+	0xcd, 0xd6, 0x25, 0x5f, 0x5b, 0x97, 0xbc, 0xef, 0x5c, 0x63, 0xb3, 0x73, 0x8d, 0x8f, 0x9d, 0x6b,
+	0x3c, 0x5f, 0xa7, 0x99, 0x78, 0x9d, 0x4f, 0xfd, 0x08, 0x8b, 0x40, 0xbb, 0xec, 0x8f, 0x1b, 0xe9,
+	0x16, 0x54, 0x81, 0x7e, 0x5a, 0x62, 0x39, 0x4b, 0xca, 0x69, 0x4b, 0xbd, 0x93, 0xc1, 0x77, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x73, 0x01, 0x27, 0xc5, 0x70, 0x03, 0x00, 0x00,
 }
 
 func (m *Point) Marshal() (dAtA []byte, err error) {
@@ -470,10 +396,20 @@ func (m *Commitment) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.Denom)
 		i = encodeVarintCommitment(dAtA, i, uint64(len(m.Denom)))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x1a
 	}
 	{
-		size, err := m.Point.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.Address.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintCommitment(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	{
+		size, err := m.Commitment.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -644,90 +580,6 @@ func (m *RangeProof) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *PendingTransfer) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *PendingTransfer) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *PendingTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.R != nil {
-		{
-			size, err := m.R.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintCommitment(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.SigIn) > 0 {
-		for iNdEx := len(m.SigIn) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.SigIn[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCommitment(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x22
-		}
-	}
-	if len(m.Out) > 0 {
-		for iNdEx := len(m.Out) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Out[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCommitment(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.In) > 0 {
-		for iNdEx := len(m.In) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.In[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCommitment(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if len(m.Index) > 0 {
-		i -= len(m.Index)
-		copy(dAtA[i:], m.Index)
-		i = encodeVarintCommitment(dAtA, i, uint64(len(m.Index)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintCommitment(dAtA []byte, offset int, v uint64) int {
 	offset -= sovCommitment(v)
 	base := offset
@@ -762,7 +614,9 @@ func (m *Commitment) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = m.Point.Size()
+	l = m.Commitment.Size()
+	n += 1 + l + sovCommitment(uint64(l))
+	l = m.Address.Size()
 	n += 1 + l + sovCommitment(uint64(l))
 	l = len(m.Denom)
 	if l > 0 {
@@ -826,41 +680,6 @@ func (m *RangeProof) Size() (n int) {
 	}
 	l = m.V.Size()
 	n += 1 + l + sovCommitment(uint64(l))
-	return n
-}
-
-func (m *PendingTransfer) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Index)
-	if l > 0 {
-		n += 1 + l + sovCommitment(uint64(l))
-	}
-	if len(m.In) > 0 {
-		for _, e := range m.In {
-			l = e.Size()
-			n += 1 + l + sovCommitment(uint64(l))
-		}
-	}
-	if len(m.Out) > 0 {
-		for _, e := range m.Out {
-			l = e.Size()
-			n += 1 + l + sovCommitment(uint64(l))
-		}
-	}
-	if len(m.SigIn) > 0 {
-		for _, e := range m.SigIn {
-			l = e.Size()
-			n += 1 + l + sovCommitment(uint64(l))
-		}
-	}
-	if m.R != nil {
-		l = m.R.Size()
-		n += 1 + l + sovCommitment(uint64(l))
-	}
 	return n
 }
 
@@ -1015,7 +834,7 @@ func (m *Commitment) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Point", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Commitment", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1042,11 +861,44 @@ func (m *Commitment) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Point.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Commitment.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCommitment
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCommitment
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCommitment
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Address.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
 			}
@@ -1537,226 +1389,6 @@ func (m *RangeProof) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.V.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCommitment(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *PendingTransfer) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCommitment
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: PendingTransfer: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PendingTransfer: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCommitment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Index = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field In", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCommitment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.In = append(m.In, Commitment{})
-			if err := m.In[len(m.In)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Out", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCommitment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Out = append(m.Out, Commitment{})
-			if err := m.Out[len(m.Out)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SigIn", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCommitment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SigIn = append(m.SigIn, Signature{})
-			if err := m.SigIn[len(m.SigIn)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field R", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCommitment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCommitment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.R == nil {
-				m.R = &Point{}
-			}
-			if err := m.R.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

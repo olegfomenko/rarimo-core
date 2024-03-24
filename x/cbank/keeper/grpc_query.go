@@ -16,13 +16,3 @@ func (k Keeper) Commitment(c context.Context, req *types.QueryGetCommitmentReque
 	//TODO implement me
 	panic("implement me")
 }
-
-func (k Keeper) PendingTransferAll(c context.Context, req *types.QueryGetAllPendingTransferRequest) (*types.QueryGetAllPendingTransferResponse, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (k Keeper) PendingTransfer(c context.Context, req *types.QueryGetPendingTransferRequest) (*types.QueryGetPendingTransferResponse, error) {
-	//TODO implement me
-	panic("implement me")
-}

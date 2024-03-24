@@ -9,7 +9,7 @@ import (
 func (k Keeper) SetCommitment(ctx sdk.Context, com *types.Commitment) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CommitmentKeyPrefix))
 	b := k.cdc.MustMarshal(com)
-	store.Set(types.CommitmentKey(com.Point.Compress()), b)
+	store.Set(types.CommitmentKey(com.Index()), b)
 }
 
 func (k Keeper) GetCommitment(ctx sdk.Context, index string) (val types.Commitment, found bool) {

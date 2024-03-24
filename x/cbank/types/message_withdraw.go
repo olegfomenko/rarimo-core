@@ -31,6 +31,7 @@ func (msg *MsgWithdraw) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
+// TODO validation
 func (msg *MsgWithdraw) ValidateBasic() error {
 	return nil
 }

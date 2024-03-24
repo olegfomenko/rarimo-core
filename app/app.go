@@ -660,6 +660,7 @@ func New(
 		keys[cbankmoduletypes.StoreKey],
 		keys[cbankmoduletypes.MemStoreKey],
 		app.BankKeeper,
+		app.AccountKeeper,
 	)
 	cbankModule := cbankmodule.NewAppModule(appCodec, app.CbankKeeper, app.AccountKeeper, app.BankKeeper)
 

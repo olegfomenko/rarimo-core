@@ -6,8 +6,6 @@ import (
 	"github.com/cloudflare/bn256"
 	"math/big"
 	"testing"
-
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func TestSchnorrSignature(t *testing.T) {
@@ -40,7 +38,7 @@ func TestSchnorrSignature(t *testing.T) {
 
 	Pub := new(bn256.G1).Add(alicePub, bobPub)
 
-	message := new(big.Int).Mod(new(big.Int).SetBytes(crypto.Keccak256([]byte("Hello world"))), bn256.Order)
+	message := Msg([]byte("Hello world"))
 	fmt.Println(message.String())
 
 	aliceSig, err := MultiSigSchnorr(alicePrv, alice_r, Pub, R, message)

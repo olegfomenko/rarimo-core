@@ -25,13 +25,6 @@ service Query {
     option (google.api.http).get = "/rarimo/rarimo-core/cbank/commitment/{index}";
   }
 
-  rpc PendingTransferAll(QueryGetAllPendingTransferRequest) returns (QueryGetAllPendingTransferResponse) {
-    option (google.api.http).get = "/rarimo/rarimo-core/cbank/transfer";
-  }
-
-  rpc PendingTransfer(QueryGetPendingTransferRequest) returns (QueryGetPendingTransferResponse) {
-    option (google.api.http).get = "/rarimo/rarimo-core/cbank/transfer/{index}";
-  }
   // this line is used by starport scaffolding # 2
 }
 
@@ -60,23 +53,6 @@ message QueryGetCommitmentRequest {
 
 message QueryGetCommitmentResponse {
   rarimo.rarimocore.cbank.Commitment commitment = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryGetAllPendingTransferRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryGetAllPendingTransferResponse {
-  repeated rarimo.rarimocore.cbank.PendingTransfer transfer = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryGetPendingTransferRequest {
-  string index = 1;
-}
-
-message QueryGetPendingTransferResponse {
-  rarimo.rarimocore.cbank.PendingTransfer transfer = 1 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # 3

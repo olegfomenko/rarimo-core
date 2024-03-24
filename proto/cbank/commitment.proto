@@ -13,8 +13,9 @@ message Point {
 }
 
 message Commitment {
-  Point point = 1 [(gogoproto.nullable) = false];
-  string denom = 2;
+  Point commitment = 1 [(gogoproto.nullable) = false];
+  Point address = 2 [(gogoproto.nullable) = false];
+  string denom = 3;
 }
 
 message Signature {
@@ -33,12 +34,4 @@ message RangeProof {
   repeated string l = 7[(gogoproto.nullable) = false];
   repeated string n = 8[(gogoproto.nullable) = false];
   Point v = 9[(gogoproto.nullable) = false];
-}
-
-message PendingTransfer {
-  string index = 1;
-  repeated Commitment in = 2[(gogoproto.nullable) = false];
-  repeated Commitment out = 3[(gogoproto.nullable) = false];
-  repeated Signature sigIn = 4[(gogoproto.nullable) = false];
-  Point r = 5;
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/cloudflare/bn256"
 	bulletproofs "github.com/distributed-lab/bulletproofs"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/rarimo/rarimo-core/x/cbank/pkg"
 	"math/big"
 )
 
@@ -84,6 +85,10 @@ func (s ScalarSlice) MustToBig() []*big.Int {
 	return res
 }
 
+func (c *Commitment) Index() string {
+	return hexutil.Encode(new(bn256.G1).Add(c.Commitment.MustToBN256G1(), c.Address.MustToBN256G1()).Marshal())
+}
+
 func (p *RangeProof) Proof() *bulletproofs.ReciprocalProof {
 	return &bulletproofs.ReciprocalProof{
 		ArithmeticCircuitProof: &bulletproofs.ArithmeticCircuitProof{
@@ -99,5 +104,12 @@ func (p *RangeProof) Proof() *bulletproofs.ReciprocalProof {
 			},
 		},
 		V: p.V.MustToBN256G1(),
+	}
+}
+
+func (s *Signature) Signature() *pkg.SchnorrSignature {
+	return &pkg.SchnorrSignature{
+		R: s.R.MustToBN256G1(),
+		S: new(big.Int).SetBytes(hexutil.MustDecode(s.S)),
 	}
 }

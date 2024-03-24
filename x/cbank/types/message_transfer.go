@@ -31,6 +31,7 @@ func (msg *MsgTransfer) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
+// TODO validation + denom check
 func (msg *MsgTransfer) ValidateBasic() error {
 	return nil
 }

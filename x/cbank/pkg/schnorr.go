@@ -29,8 +29,12 @@ func R(G *bn256.G1) (*big.Int, *bn256.G1, error) {
 	return r, new(bn256.G1).ScalarMult(G, r), nil
 }
 
+func Msg(bytes ...[]byte) *big.Int {
+	return new(big.Int).Mod(new(big.Int).SetBytes(Hash(bytes...)), bn256.Order)
+}
+
 func MultiSigSchnorr(prv *big.Int, r *big.Int, PubKeyCommon *bn256.G1, RCommon *bn256.G1, m *big.Int) (*SchnorrSignature, error) {
-	hash := new(big.Int).SetBytes(Hash(m.Bytes(), PubKeyCommon.Marshal(), RCommon.Marshal()))
+	hash := Msg(m.Bytes(), PubKeyCommon.Marshal(), RCommon.Marshal())
 	s := new(big.Int).Add(r, new(big.Int).Mul(hash, prv))
 
 	return &SchnorrSignature{
@@ -45,7 +49,7 @@ func SignSchnorr(prv *big.Int, PublicKey *bn256.G1, G *bn256.G1, m *big.Int) (*S
 		return nil, err
 	}
 
-	hash := new(big.Int).SetBytes(Hash(m.Bytes(), PublicKey.Marshal(), R.Marshal()))
+	hash := Msg(m.Bytes(), PublicKey.Marshal(), R.Marshal())
 
 	s := new(big.Int).Add(r, new(big.Int).Mul(hash, prv))
 
@@ -55,23 +59,19 @@ func SignSchnorr(prv *big.Int, PublicKey *bn256.G1, G *bn256.G1, m *big.Int) (*S
 	}, nil
 }
 
-func VerifySchnorr(sig *SchnorrSignature, PublicKey *bn256.G1, G *bn256.G1, m *big.Int) error {
+func VerifySchnorr(sig *SchnorrSignature, PublicKey *bn256.G1, G *bn256.G1, m *big.Int) bool {
 	// s = r + hash*prv
 	// R = rG
 
 	// p2 = (r + hash*prv)*G
 	// p1 = rG + hash*prv*G = (r + hash*prv)*G
 
-	hash := new(big.Int).SetBytes(Hash(m.Bytes(), PublicKey.Marshal(), sig.R.Marshal()))
+	hash := Msg(m.Bytes(), PublicKey.Marshal(), sig.R.Marshal())
 
 	p1 := new(bn256.G1).ScalarMult(PublicKey, hash)
 	p1 = new(bn256.G1).Add(p1, sig.R)
 
 	p2 := new(bn256.G1).ScalarMult(G, sig.S)
 
-	if !bytes.Equal(p1.Marshal(), p2.Marshal()) {
-		return errors.New("verification failed")
-	}
-
-	return nil
+	return bytes.Equal(p1.Marshal(), p2.Marshal())
 }

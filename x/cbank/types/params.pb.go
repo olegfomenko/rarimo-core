@@ -25,8 +25,13 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Params defines the parameters for the module.
 type Params struct {
-	G Point `protobuf:"bytes,1,opt,name=g,proto3" json:"g"`
-	H Point `protobuf:"bytes,2,opt,name=h,proto3" json:"h"`
+	G        Point   `protobuf:"bytes,1,opt,name=g,proto3" json:"g"`
+	GVec     []Point `protobuf:"bytes,2,rep,name=gVec,proto3" json:"gVec"`
+	HVec     []Point `protobuf:"bytes,3,rep,name=hVec,proto3" json:"hVec"`
+	Nd       int32   `protobuf:"varint,4,opt,name=Nd,proto3" json:"Nd,omitempty"`
+	Np       int32   `protobuf:"varint,5,opt,name=Np,proto3" json:"Np,omitempty"`
+	GVecWNLA []Point `protobuf:"bytes,6,rep,name=gVecWNLA,proto3" json:"gVecWNLA"`
+	HVecWNLA []Point `protobuf:"bytes,7,rep,name=hVecWNLA,proto3" json:"hVecWNLA"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -69,11 +74,46 @@ func (m *Params) GetG() Point {
 	return Point{}
 }
 
-func (m *Params) GetH() Point {
+func (m *Params) GetGVec() []Point {
 	if m != nil {
-		return m.H
+		return m.GVec
 	}
-	return Point{}
+	return nil
+}
+
+func (m *Params) GetHVec() []Point {
+	if m != nil {
+		return m.HVec
+	}
+	return nil
+}
+
+func (m *Params) GetNd() int32 {
+	if m != nil {
+		return m.Nd
+	}
+	return 0
+}
+
+func (m *Params) GetNp() int32 {
+	if m != nil {
+		return m.Np
+	}
+	return 0
+}
+
+func (m *Params) GetGVecWNLA() []Point {
+	if m != nil {
+		return m.GVecWNLA
+	}
+	return nil
+}
+
+func (m *Params) GetHVecWNLA() []Point {
+	if m != nil {
+		return m.HVecWNLA
+	}
+	return nil
 }
 
 func init() {
@@ -83,20 +123,24 @@ func init() {
 func init() { proto.RegisterFile("cbank/params.proto", fileDescriptor_dd4bca218dbc3770) }
 
 var fileDescriptor_dd4bca218dbc3770 = []byte{
-	// 200 bytes of a gzipped FileDescriptorProto
+	// 271 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x4a, 0x4e, 0x4a, 0xcc,
 	0xcb, 0xd6, 0x2f, 0x48, 0x2c, 0x4a, 0xcc, 0x2d, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12,
 	0x2f, 0x4a, 0x2c, 0xca, 0xcc, 0xcd, 0xd7, 0x83, 0x50, 0xc9, 0xf9, 0x45, 0xa9, 0x7a, 0x60, 0x55,
 	0x52, 0x22, 0xe9, 0xf9, 0xe9, 0xf9, 0x60, 0x35, 0xfa, 0x20, 0x16, 0x44, 0xb9, 0x94, 0x18, 0xc4,
-	0x88, 0xe4, 0xfc, 0xdc, 0xdc, 0xcc, 0x92, 0xdc, 0xd4, 0xbc, 0x12, 0x88, 0xb8, 0x52, 0x01, 0x17,
-	0x5b, 0x00, 0xd8, 0x58, 0x21, 0x23, 0x2e, 0xc6, 0x74, 0x09, 0x46, 0x05, 0x46, 0x0d, 0x6e, 0x23,
-	0x39, 0x3d, 0x1c, 0x86, 0xeb, 0x05, 0xe4, 0x67, 0xe6, 0x95, 0x38, 0xb1, 0x9c, 0xb8, 0x27, 0xcf,
-	0x10, 0xc4, 0x98, 0x0e, 0xd2, 0x93, 0x21, 0xc1, 0x44, 0x8a, 0x9e, 0x0c, 0x27, 0xd7, 0x13, 0x8f,
-	0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b,
-	0x8f, 0xe5, 0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0xd2, 0x4e, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2,
-	0x4b, 0xce, 0xcf, 0xd5, 0x87, 0x98, 0x02, 0xa5, 0x74, 0x41, 0xa6, 0xe9, 0x57, 0xe8, 0x43, 0xfc,
-	0x50, 0x52, 0x59, 0x90, 0x5a, 0x9c, 0xc4, 0x06, 0x76, 0xbf, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff,
-	0xc1, 0x41, 0xef, 0x19, 0x1c, 0x01, 0x00, 0x00,
+	0x88, 0xe4, 0xfc, 0xdc, 0xdc, 0xcc, 0x92, 0xdc, 0xd4, 0xbc, 0x12, 0x88, 0xb8, 0xd2, 0x15, 0x26,
+	0x2e, 0xb6, 0x00, 0xb0, 0xb9, 0x42, 0x46, 0x5c, 0x8c, 0xe9, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0xdc,
+	0x46, 0x72, 0x7a, 0x38, 0x4c, 0xd7, 0x0b, 0xc8, 0xcf, 0xcc, 0x2b, 0x71, 0x62, 0x39, 0x71, 0x4f,
+	0x9e, 0x21, 0x88, 0x31, 0x5d, 0xc8, 0x82, 0x8b, 0x25, 0x3d, 0x2c, 0x35, 0x59, 0x82, 0x49, 0x81,
+	0x99, 0x68, 0x6d, 0x60, 0x1d, 0x20, 0x9d, 0x19, 0x20, 0x9d, 0xcc, 0xa4, 0xe8, 0x04, 0xe9, 0x10,
+	0xe2, 0xe3, 0x62, 0xf2, 0x4b, 0x91, 0x60, 0x51, 0x60, 0xd4, 0x60, 0x0d, 0x62, 0xf2, 0x4b, 0x01,
+	0xf3, 0x0b, 0x24, 0x58, 0xa1, 0xfc, 0x02, 0x21, 0x07, 0x2e, 0x0e, 0x90, 0x0d, 0xe1, 0x7e, 0x3e,
+	0x8e, 0x12, 0x6c, 0x24, 0x98, 0x0e, 0xd7, 0x05, 0x32, 0x21, 0x03, 0x66, 0x02, 0x3b, 0x29, 0x26,
+	0xc0, 0x74, 0x39, 0xb9, 0x9e, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72,
+	0x8c, 0x13, 0x1e, 0xcb, 0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x76,
+	0x7a, 0x66, 0x49, 0x46, 0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0x3e, 0xc4, 0x30, 0x28, 0xa5, 0x0b,
+	0x32, 0x54, 0xbf, 0x42, 0x1f, 0x12, 0x51, 0x25, 0x95, 0x05, 0xa9, 0xc5, 0x49, 0x6c, 0xe0, 0x48,
+	0x32, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0xe8, 0x0d, 0x1c, 0x0d, 0x01, 0x02, 0x00, 0x00,
 }
 
 func (m *Params) Marshal() (dAtA []byte, err error) {
@@ -119,16 +163,72 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	{
-		size, err := m.H.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
+	if len(m.HVecWNLA) > 0 {
+		for iNdEx := len(m.HVecWNLA) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.HVecWNLA[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintParams(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
 		}
-		i -= size
-		i = encodeVarintParams(dAtA, i, uint64(size))
 	}
-	i--
-	dAtA[i] = 0x12
+	if len(m.GVecWNLA) > 0 {
+		for iNdEx := len(m.GVecWNLA) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.GVecWNLA[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintParams(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	if m.Np != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.Np))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.Nd != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.Nd))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.HVec) > 0 {
+		for iNdEx := len(m.HVec) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.HVec[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintParams(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.GVec) > 0 {
+		for iNdEx := len(m.GVec) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.GVec[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintParams(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
 	{
 		size, err := m.G.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
@@ -161,8 +261,36 @@ func (m *Params) Size() (n int) {
 	_ = l
 	l = m.G.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = m.H.Size()
-	n += 1 + l + sovParams(uint64(l))
+	if len(m.GVec) > 0 {
+		for _, e := range m.GVec {
+			l = e.Size()
+			n += 1 + l + sovParams(uint64(l))
+		}
+	}
+	if len(m.HVec) > 0 {
+		for _, e := range m.HVec {
+			l = e.Size()
+			n += 1 + l + sovParams(uint64(l))
+		}
+	}
+	if m.Nd != 0 {
+		n += 1 + sovParams(uint64(m.Nd))
+	}
+	if m.Np != 0 {
+		n += 1 + sovParams(uint64(m.Np))
+	}
+	if len(m.GVecWNLA) > 0 {
+		for _, e := range m.GVecWNLA {
+			l = e.Size()
+			n += 1 + l + sovParams(uint64(l))
+		}
+	}
+	if len(m.HVecWNLA) > 0 {
+		for _, e := range m.HVecWNLA {
+			l = e.Size()
+			n += 1 + l + sovParams(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -236,7 +364,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field H", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GVec", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -263,7 +391,148 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.H.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.GVec = append(m.GVec, Point{})
+			if err := m.GVec[len(m.GVec)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field HVec", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.HVec = append(m.HVec, Point{})
+			if err := m.HVec[len(m.HVec)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Nd", wireType)
+			}
+			m.Nd = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Nd |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Np", wireType)
+			}
+			m.Np = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Np |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GVecWNLA", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GVecWNLA = append(m.GVecWNLA, Point{})
+			if err := m.GVecWNLA[len(m.GVecWNLA)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field HVecWNLA", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.HVecWNLA = append(m.HVecWNLA, Point{})
+			if err := m.HVecWNLA[len(m.HVecWNLA)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

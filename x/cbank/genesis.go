@@ -13,9 +13,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, com := range genState.Commitments {
 		k.SetCommitment(ctx, &com)
 	}
-	for _, pt := range genState.Transfers {
-		k.SetPendingTransfer(ctx, &pt)
-	}
 }
 
 // ExportGenesis returns the module's exported genesis
@@ -23,7 +20,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
 	genesis.Commitments = k.GetAllCommitment(ctx)
-	genesis.Transfers = k.GetAllPendingTransfer(ctx)
 
 	// this line is used by starport scaffolding # genesis/module/export
 
