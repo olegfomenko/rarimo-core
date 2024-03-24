@@ -47833,6 +47833,299 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
+  /rarimo/rarimo-core/cbank/commitment:
+    get:
+      operationId: RarimoRarimocoreCbankCommitmentAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              commitment:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    commitment:
+                      type: object
+                      properties:
+                        xCord:
+                          type: string
+                          title: hex-encoded
+                        yCord:
+                          type: string
+                          title: hex-encoded
+                    address:
+                      type: object
+                      properties:
+                        xCord:
+                          type: string
+                          title: hex-encoded
+                        yCord:
+                          type: string
+                          title: hex-encoded
+                    denom:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /rarimo/rarimo-core/cbank/commitment/{index}:
+    get:
+      operationId: RarimoRarimocoreCbankCommitment
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              commitment:
+                type: object
+                properties:
+                  commitment:
+                    type: object
+                    properties:
+                      xCord:
+                        type: string
+                        title: hex-encoded
+                      yCord:
+                        type: string
+                        title: hex-encoded
+                  address:
+                    type: object
+                    properties:
+                      xCord:
+                        type: string
+                        title: hex-encoded
+                      yCord:
+                        type: string
+                        title: hex-encoded
+                  denom:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: index
+          description: compressed form point
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /rarimo/rarimo-core/cbank/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: RarimoRarimocoreCbankParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+                properties:
+                  g:
+                    type: object
+                    properties:
+                      xCord:
+                        type: string
+                        title: hex-encoded
+                      yCord:
+                        type: string
+                        title: hex-encoded
+                  gVec:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        xCord:
+                          type: string
+                          title: hex-encoded
+                        yCord:
+                          type: string
+                          title: hex-encoded
+                  hVec:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        xCord:
+                          type: string
+                          title: hex-encoded
+                        yCord:
+                          type: string
+                          title: hex-encoded
+                  Nd:
+                    type: integer
+                    format: int32
+                  Np:
+                    type: integer
+                    format: int32
+                  gVecWNLA:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        xCord:
+                          type: string
+                          title: hex-encoded
+                        yCord:
+                          type: string
+                          title: hex-encoded
+                  hVecWNLA:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        xCord:
+                          type: string
+                          title: hex-encoded
+                        yCord:
+                          type: string
+                          title: hex-encoded
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /rarimo/rarimo-core/identity/node:
     get:
       operationId: RarimoRarimocoreIdentityNodeAll
@@ -51743,6 +52036,10 @@ paths:
                   timestamp:
                     type: string
                     title: Dec uint256
+                  blockNumber:
+                    type: string
+                    format: uint64
+                    title: simplifies voting flow
         default:
           description: An unexpected error response.
           schema:
@@ -51789,6 +52086,11 @@ paths:
           in: query
           required: false
           type: string
+        - name: msg.blockNumber
+          in: query
+          required: false
+          type: string
+          format: uint64
       tags:
         - Query
   /rarimo/rarimo-core/rarimocore/confirmation:
@@ -88507,6 +88809,347 @@ definitions:
         type: string
       tokenID:
         type: string
+  rarimo.rarimocore.cbank.Commitment:
+    type: object
+    properties:
+      commitment:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+      address:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+      denom:
+        type: string
+  rarimo.rarimocore.cbank.MsgDepositResponse:
+    type: object
+  rarimo.rarimocore.cbank.MsgTransferResponse:
+    type: object
+  rarimo.rarimocore.cbank.MsgWithdrawResponse:
+    type: object
+  rarimo.rarimocore.cbank.Params:
+    type: object
+    properties:
+      g:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+      gVec:
+        type: array
+        items:
+          type: object
+          properties:
+            xCord:
+              type: string
+              title: hex-encoded
+            yCord:
+              type: string
+              title: hex-encoded
+      hVec:
+        type: array
+        items:
+          type: object
+          properties:
+            xCord:
+              type: string
+              title: hex-encoded
+            yCord:
+              type: string
+              title: hex-encoded
+      Nd:
+        type: integer
+        format: int32
+      Np:
+        type: integer
+        format: int32
+      gVecWNLA:
+        type: array
+        items:
+          type: object
+          properties:
+            xCord:
+              type: string
+              title: hex-encoded
+            yCord:
+              type: string
+              title: hex-encoded
+      hVecWNLA:
+        type: array
+        items:
+          type: object
+          properties:
+            xCord:
+              type: string
+              title: hex-encoded
+            yCord:
+              type: string
+              title: hex-encoded
+    description: Params defines the parameters for the module.
+  rarimo.rarimocore.cbank.Point:
+    type: object
+    properties:
+      xCord:
+        type: string
+        title: hex-encoded
+      yCord:
+        type: string
+        title: hex-encoded
+  rarimo.rarimocore.cbank.QueryGetAllCommitmentResponse:
+    type: object
+    properties:
+      commitment:
+        type: array
+        items:
+          type: object
+          properties:
+            commitment:
+              type: object
+              properties:
+                xCord:
+                  type: string
+                  title: hex-encoded
+                yCord:
+                  type: string
+                  title: hex-encoded
+            address:
+              type: object
+              properties:
+                xCord:
+                  type: string
+                  title: hex-encoded
+                yCord:
+                  type: string
+                  title: hex-encoded
+            denom:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  rarimo.rarimocore.cbank.QueryGetCommitmentResponse:
+    type: object
+    properties:
+      commitment:
+        type: object
+        properties:
+          commitment:
+            type: object
+            properties:
+              xCord:
+                type: string
+                title: hex-encoded
+              yCord:
+                type: string
+                title: hex-encoded
+          address:
+            type: object
+            properties:
+              xCord:
+                type: string
+                title: hex-encoded
+              yCord:
+                type: string
+                title: hex-encoded
+          denom:
+            type: string
+  rarimo.rarimocore.cbank.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+        properties:
+          g:
+            type: object
+            properties:
+              xCord:
+                type: string
+                title: hex-encoded
+              yCord:
+                type: string
+                title: hex-encoded
+          gVec:
+            type: array
+            items:
+              type: object
+              properties:
+                xCord:
+                  type: string
+                  title: hex-encoded
+                yCord:
+                  type: string
+                  title: hex-encoded
+          hVec:
+            type: array
+            items:
+              type: object
+              properties:
+                xCord:
+                  type: string
+                  title: hex-encoded
+                yCord:
+                  type: string
+                  title: hex-encoded
+          Nd:
+            type: integer
+            format: int32
+          Np:
+            type: integer
+            format: int32
+          gVecWNLA:
+            type: array
+            items:
+              type: object
+              properties:
+                xCord:
+                  type: string
+                  title: hex-encoded
+                yCord:
+                  type: string
+                  title: hex-encoded
+          hVecWNLA:
+            type: array
+            items:
+              type: object
+              properties:
+                xCord:
+                  type: string
+                  title: hex-encoded
+                yCord:
+                  type: string
+                  title: hex-encoded
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  rarimo.rarimocore.cbank.RangeProof:
+    type: object
+    properties:
+      cl:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+      cr:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+      co:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+      cs:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+      x:
+        type: array
+        items:
+          type: object
+          properties:
+            xCord:
+              type: string
+              title: hex-encoded
+            yCord:
+              type: string
+              title: hex-encoded
+      r:
+        type: array
+        items:
+          type: object
+          properties:
+            xCord:
+              type: string
+              title: hex-encoded
+            yCord:
+              type: string
+              title: hex-encoded
+      l:
+        type: array
+        items:
+          type: string
+      'n':
+        type: array
+        items:
+          type: string
+      v:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+  rarimo.rarimocore.cbank.Signature:
+    type: object
+    properties:
+      r:
+        type: object
+        properties:
+          xCord:
+            type: string
+            title: hex-encoded
+          yCord:
+            type: string
+            title: hex-encoded
+      s:
+        type: string
+        title: hex-encoded
   rarimo.rarimocore.identity.MsgSetIdentityContractAddressResponse:
     type: object
   rarimo.rarimocore.identity.Node:
@@ -89988,6 +90631,9 @@ definitions:
       timestamp:
         type: string
         title: Dec uint256
+      blockNumber:
+        type: string
+        format: uint64
   rarimo.rarimocore.oraclemanager.MsgCreateWorldCoinIdentityTransferOpResponse:
     type: object
   rarimo.rarimocore.oraclemanager.MsgStakeResponse:
@@ -90428,6 +91074,10 @@ definitions:
           timestamp:
             type: string
             title: Dec uint256
+          blockNumber:
+            type: string
+            format: uint64
+            title: simplifies voting flow
   rarimo.rarimocore.oraclemanager.QueryParamsResponse:
     type: object
     properties:
@@ -90618,6 +91268,10 @@ definitions:
       timestamp:
         type: string
         title: Dec uint256
+      blockNumber:
+        type: string
+        format: uint64
+        title: simplifies voting flow
   rarimo.rarimocore.tokenmanager.ItemMetadata:
     type: object
     properties:

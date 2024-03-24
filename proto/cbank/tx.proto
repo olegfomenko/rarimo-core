@@ -1,0 +1,52 @@
+syntax = "proto3";
+package rarimo.rarimocore.cbank;
+
+import "gogoproto/gogo.proto";
+import "cbank/commitment.proto";
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/rarimo/rarimo-core/x/cbank/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
+  rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
+  rpc Transfer(MsgTransfer) returns (MsgTransferResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgDeposit {
+  rarimo.rarimocore.cbank.Point commitmentPublicKey = 1[(gogoproto.nullable) = false];
+  rarimo.rarimocore.cbank.Point address = 2[(gogoproto.nullable) = false];
+  rarimo.rarimocore.cbank.Signature sigCommitment = 3[(gogoproto.nullable) = false];
+  string creator = 4;
+  string amount = 5;
+  string demon = 6;
+}
+
+message MsgDepositResponse{}
+
+message MsgWithdraw {
+  string commitmentIndex = 1;
+  rarimo.rarimocore.cbank.Signature sigCommitment = 2[(gogoproto.nullable) = false];
+  rarimo.rarimocore.cbank.Signature sigAddress = 3[(gogoproto.nullable) = false];
+  string amount = 4;
+  string creator = 5;
+}
+
+message MsgWithdrawResponse{}
+
+message MsgTransfer {
+  repeated rarimo.rarimocore.cbank.Commitment in = 1[(gogoproto.nullable) = false];
+  repeated rarimo.rarimocore.cbank.Commitment out = 2[(gogoproto.nullable) = false];
+  rarimo.rarimocore.cbank.Signature sigCommitment = 3[(gogoproto.nullable) = false];
+  repeated rarimo.rarimocore.cbank.Signature sigAddress = 4[(gogoproto.nullable) = false];
+  repeated rarimo.rarimocore.cbank.RangeProof proof = 5[(gogoproto.nullable) = false];
+  string creator = 6;
+}
+
+message MsgTransferResponse{}
+
+
+// this line is used by starport scaffolding # proto/tx/message
