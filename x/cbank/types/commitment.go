@@ -11,6 +11,14 @@ import (
 
 const numBytes = 32
 
+func NewCommitment(com *bn256.G1, addr *bn256.G1, denom string) Commitment {
+	return Commitment{
+		Commitment: *new(Point).MustFromBN256G1(com),
+		Address:    *new(Point).MustFromBN256G1(addr),
+		Denom:      denom,
+	}
+}
+
 func (p Point) Compress() string {
 	return hexutil.Encode(p.CompressBytes())
 }
@@ -24,8 +32,8 @@ func (p Point) CompressBytes() []byte {
 	return buf
 }
 
-func (p *Point) Decompress(s string) error {
-	return p.DecompressBytes(hexutil.MustDecode(s))
+func (p *Point) Decompress(s string) (*Point, error) {
+	return p, p.DecompressBytes(hexutil.MustDecode(s))
 }
 
 func (p *Point) DecompressBytes(buf []byte) error {
@@ -85,6 +93,14 @@ func (s ScalarSlice) MustToBig() []*big.Int {
 	return res
 }
 
+func (s *ScalarSlice) MustFromBig(arr []*big.Int) *ScalarSlice {
+	for _, b := range arr {
+		*s = append(*s, hexutil.Encode(b.Bytes()))
+	}
+
+	return s
+}
+
 func (c *Commitment) Index() string {
 	return hexutil.Encode(new(bn256.G1).Add(c.Commitment.MustToBN256G1(), c.Address.MustToBN256G1()).Marshal())
 }
@@ -107,9 +123,31 @@ func (p *RangeProof) Proof() *bulletproofs.ReciprocalProof {
 	}
 }
 
+func (p *RangeProof) FromProof(proof *bulletproofs.ReciprocalProof) *RangeProof {
+	return &RangeProof{
+		Cl: *new(Point).MustFromBN256G1(proof.CL),
+		Cr: *new(Point).MustFromBN256G1(proof.CR),
+		Co: *new(Point).MustFromBN256G1(proof.CO),
+		Cs: *new(Point).MustFromBN256G1(proof.CS),
+		X:  *new(PointSlice).MustFromBN256G1(proof.WNLA.X),
+		R:  *new(PointSlice).MustFromBN256G1(proof.WNLA.R),
+		L:  *new(ScalarSlice).MustFromBig(proof.WNLA.L),
+		N:  *new(ScalarSlice).MustFromBig(proof.WNLA.N),
+		V:  *new(Point).MustFromBN256G1(proof.V),
+	}
+
+}
+
 func (s *Signature) Signature() *pkg.SchnorrSignature {
 	return &pkg.SchnorrSignature{
 		R: s.R.MustToBN256G1(),
 		S: new(big.Int).SetBytes(hexutil.MustDecode(s.S)),
+	}
+}
+
+func (s *Signature) FromSignature(sig *pkg.SchnorrSignature) *Signature {
+	return &Signature{
+		R: *new(Point).MustFromBN256G1(sig.R),
+		S: hexutil.Encode(sig.S.Bytes()),
 	}
 }

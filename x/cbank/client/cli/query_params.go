@@ -2,10 +2,10 @@ package cli
 
 import (
 	"context"
+	"github.com/rarimo/rarimo-core/x/cbank/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/rarimo/rarimo-core/x/cbank/types"
 	"github.com/spf13/cobra"
 )
 
